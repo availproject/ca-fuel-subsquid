@@ -103,6 +103,7 @@ const database = new TypeormDatabase()
 
 // Now we are ready to start processing the data
 run(dataSource, database, async ctx => {
+  console.log(`Got ${ctx.blocks.length} blocks`)
   let blocks = ctx.blocks.map(augmentBlock)
   const entries: LogEntry[] = []
 
@@ -121,5 +122,5 @@ run(dataSource, database, async ctx => {
     }
   }
 
-  ctx.store.insert(entries)
+  await ctx.store.insert(entries)
 })
