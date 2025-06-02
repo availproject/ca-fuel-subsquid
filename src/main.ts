@@ -1,10 +1,10 @@
-import {run} from '@subsquid/batch-processor'
-import {augmentBlock} from '@subsquid/fuel-objects'
-import {DataSourceBuilder} from '@subsquid/fuel-stream'
-import {TypeormDatabase} from '@subsquid/typeorm-store'
-import {arrayify, hexlify, randomBytes} from 'fuels'
+import { run } from '@subsquid/batch-processor'
+import { augmentBlock } from '@subsquid/fuel-objects'
+import { DataSourceBuilder } from '@subsquid/fuel-stream'
+import { TypeormDatabase } from '@subsquid/typeorm-store'
+import { arrayify, hexlify, randomBytes } from 'fuels'
 
-import {LogEntry} from './model'
+import { LogEntry } from './model'
 
 const LOG_TYPES = new Set([6732614218709939873n, 12195664052085097644n])
 
@@ -51,7 +51,7 @@ const dataSource = new DataSourceBuilder()
       contract: true,
       receiptType: true,
       rb: true,
-      data: true
+      data: true,
     }
   })
   // We request items via `.addXxx()` methods.
@@ -59,7 +59,8 @@ const dataSource = new DataSourceBuilder()
   // Each `.addXxx()` method accepts item selection criteria
   // and also allows to request related items.
   .addReceipt({
-    type: ['LOG_DATA']
+    type: ['LOG_DATA'],
+    transaction: true,
   })
   .build()
 
@@ -105,12 +106,12 @@ const database = new TypeormDatabase()
 // Now we are ready to start processing the data
 run(dataSource, database, async ctx => {
   console.log(`Got ${ctx.blocks.length} blocks`)
-  let blocks = ctx.blocks.map(augmentBlock)
+  const blocks = ctx.blocks.map(augmentBlock)
   const entries: LogEntry[] = []
 
-  for (let block of blocks) {
-    for (let receipt of block.receipts) {
-      if (receipt.receiptType != 'LOG_DATA' || receipt.contract == null || receipt.rb == null || receipt.data == null) {
+  for (const block of blocks) {
+    for (const receipt of block.receipts) {
+      if (receipt.receiptType !== 'LOG_DATA' || receipt.contract == null || receipt.rb == null || receipt.data == null || receipt.transaction == null) {
         continue
       }
       if (!LOG_TYPES.has(receipt.rb)) {
@@ -118,6 +119,7 @@ run(dataSource, database, async ctx => {
       }
       entries.push(new LogEntry({
         id: hexlify(randomBytes(8)),
+        txHash: arrayify(receipt.getTransaction().hash),
         foundAt: block.header.height,
         contract: arrayify(receipt.contract),
         rb: receipt.rb,

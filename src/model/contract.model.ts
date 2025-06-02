@@ -1,4 +1,4 @@
-import {BigIntColumn, BytesColumn, Entity, IntColumn, PrimaryColumn, Index} from '@subsquid/typeorm-store'
+import { BigIntColumn, BytesColumn, Entity, IntColumn, PrimaryColumn, Index } from '@subsquid/typeorm-store'
 
 // Here we define `exchange` database table as TypeORM entity class.
 //
@@ -10,9 +10,9 @@ import {BigIntColumn, BytesColumn, Entity, IntColumn, PrimaryColumn, Index} from
 // supports only primitive DML operations (insert, upsert, update and delete)
 // without cascading.
 @Entity()
-@Index(["foundAt", "contract"]) // primary lookup
+@Index(['foundAt', 'contract']) // primary lookup
 export class LogEntry {
-  constructor(props?: Partial<LogEntry>) {
+  constructor (props?: Partial<LogEntry>) {
     Object.assign(this, props)
   }
 
@@ -20,16 +20,19 @@ export class LogEntry {
   @PrimaryColumn()
   id!: string
 
-  @IntColumn({nullable: false})
+  @BytesColumn({ nullable: false })
+  txHash!: Uint8Array
+
+  @IntColumn({ nullable: false })
   @Index()
   foundAt!: number
 
-  @BytesColumn({nullable: false})
+  @BytesColumn({ nullable: false })
   contract!: Uint8Array
 
-  @BigIntColumn({nullable: false})
+  @BigIntColumn({ nullable: false })
   rb!: bigint
 
-  @BytesColumn({nullable: false})
+  @BytesColumn({ nullable: false })
   data!: Uint8Array
 }
