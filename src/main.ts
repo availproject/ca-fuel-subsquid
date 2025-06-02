@@ -6,6 +6,7 @@ import {arrayify, hexlify, randomBytes} from 'fuels'
 
 import {LogEntry} from './model'
 
+const LOG_TYPES = new Set([6732614218709939873n, 12195664052085097644n])
 
 // First we create a DataSource - the component that
 // defines what data we need and where to get it
@@ -112,8 +113,11 @@ run(dataSource, database, async ctx => {
       if (receipt.receiptType != 'LOG_DATA' || receipt.contract == null || receipt.rb == null || receipt.data == null) {
         continue
       }
+      if (!LOG_TYPES.has(receipt.rb)) {
+        continue
+      }
       entries.push(new LogEntry({
-        id: hexlify(randomBytes(8).slice(2)),
+        id: hexlify(randomBytes(8)),
         foundAt: block.header.height,
         contract: arrayify(receipt.contract),
         rb: receipt.rb,
