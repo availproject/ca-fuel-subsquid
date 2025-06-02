@@ -1,0 +1,7 @@
+type LogEntry @entity {
+  id: ID!
+  foundAt: Int!
+  contract: Bytes!
+  rb: BigInt!
+  data: Bytes!
+}
