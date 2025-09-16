@@ -18,8 +18,8 @@ const dataSource = new DataSourceBuilder()
   // the last mile and stay on top of the chain.
   // This is a limitation, and we promise to lift it in the future!
   .setGraphql({
-    // url: 'https://fuel-mainnet.arcana.network/v1/graphql',
-    url: 'https://mainnet.fuel.network/v1/graphql',
+    url: 'https://fuel-mainnet.arcana.network/v1/graphql',
+    // url: 'https://mainnet.fuel.network/v1/graphql',
     strideConcurrency: 3,
     strideSize: 30
   })
